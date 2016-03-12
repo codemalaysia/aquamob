@@ -25,6 +25,10 @@
             android:name=".MainActivity"
             android:label="Home"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".VersionCheckActivity"
+            android:label="Updates"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

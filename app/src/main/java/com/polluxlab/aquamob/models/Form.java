@@ -25,4 +25,9 @@ public class Form {
     public String getFormId() {
         return formId;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

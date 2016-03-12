@@ -10,7 +10,7 @@ public class AppConst {
     public static String PREF_FORM_IDS="pref_form_ids";
     public static String PREF_USER_INFOS="pref_user_infos";
 
-    public static String DEBUG_KEY="Lobster";
+    public static String DEBUG_KEY="aquamob";
     public static int MAX_CONNECTION_TRY = 1;
     public static int TIME_OUT = 20000;//in millisecond
 
