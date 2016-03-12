@@ -5,4 +5,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="username_hint">username@company</string>
+    <string name="enter_username">Enter Your Username</string>
+
 </resources>
