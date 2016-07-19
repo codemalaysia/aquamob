@@ -82,9 +82,13 @@ public class Util {
         Toast.makeText(con, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static void printDebug(String key,String message){
+    public static void printDebug(String...msg){
         if(BuildConfig.DEBUG){
-            Log.d(AppConst.DEBUG_KEY, key + " - " + message);
+            String output="";
+            for (String m: msg) {
+                output+=m+" - ";
+            }
+            Log.d(AppConst.DEBUG_KEY, output);
         }
     }
 
