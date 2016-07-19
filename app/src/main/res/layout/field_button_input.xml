@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout   xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+    <TextView
+        android:id="@+id/fieldHeaderTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/FieldHeaderStyle"
+        android:text="Field Header"/>
+
+    <TextView
+        android:id="@+id/fieldSubHeaderTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        style="@style/FieldSubHeaderStyle"
+        android:text="Field Subheader"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pilih"
+        android:background="@drawable/button_style"
+        android:textSize="20sp"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:id="@+id/button"/>
+
+</LinearLayout>

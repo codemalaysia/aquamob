@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/fieldHeaderTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/FieldHeaderStyle"
+        android:text="Field Header"/>
+
+    <TextView
+        android:id="@+id/fieldSubHeaderTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/FieldSubHeaderStyle"
+        android:visibility="gone"
+        android:text="Field Subheader"/>
+
+    <Spinner
+        android:id="@+id/fieldSpinner"
+        style="@android:style/Widget.Holo.Light.Spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
