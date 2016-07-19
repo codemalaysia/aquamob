@@ -7,5 +7,939 @@
 
     <string name="username_hint">username@company</string>
     <string name="enter_username">Enter Your Username</string>
+    <string name="title_activity_form_data_list">Form Data</string>
 
+
+    <string name="forms_json" formatted="false">
+        [
+  {
+    \"id\": \"25\",
+    \"title\": \"Feed\",
+    \"categories\": [
+      {
+        \"http://www.aquamob.com/types\": \"form\"
+      }
+    ],
+    \"fields\": [
+      {
+        \"name\": \"feed_sector\",
+        \"label\": \"Select Sector\",
+        \"type\": \"sector\"
+      },
+      {
+        \"name\": \"feed_subsector\",
+        \"label\": \"Select Sub Sector\",
+        \"type\": \"subsector\"
+      },
+      {
+        \"name\": \"feed_pond\",
+        \"label\": \"Select Pond\",
+        \"type\": \"pond\"
+      },
+      {
+        \"name\": \"feed_date\",
+        \"label\": \"Time\",
+        \"type\": \"dropdown\",
+        \"repeat\": true,
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": [
+            {
+              \"label\": \"4 AM\",
+              \"id\": \"4am\"
+            },
+            {
+              \"label\": \"6 AM\",
+              \"id\": \"6am\"
+            },
+            {
+              \"label\": \"12 PM\",
+              \"id\": \"12pm\"
+            },
+            {
+              \"label\": \"2 PM\",
+              \"id\": \"2pm\"
+            },
+            {
+              \"label\": \"4 PM\",
+              \"id\": \"4pm\"
+            },
+            {
+              \"label\": \"8 PM\",
+              \"id\": \"8pm\"
+            }
+          ]
+        }
+      },
+      {
+        \"name\": \"com1_feedgiven\",
+        \"label\": \"Feed Given (cups)(500g)\",
+        \"type\": \"slider\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 1,
+            \"max\": 20,
+            \"default\": 1
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Kolam\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_feedtype\",
+        \"label\": \"Feed Type\",
+        \"type\": \"boolean\",
+        \"remember\": true,
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"true\": \"Baby feed\",
+            \"false\": \"Adult feed\",
+            \"default\": false
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Feed type\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_typeoffeed\",
+        \"label\": \"Time of feed\",
+        \"remember\": true,
+        \"type\": \"boolean\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"true\": \"Morning\",
+            \"false\": \"Night\",
+            \"default\": true
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Time of feed\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_notes\",
+        \"label\": \"Notes\",
+        \"type\": \"text\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"captureTime\",
+        \"label\": \"Capture Time\",
+        \"type\": \"date\",
+        \"default\": \"NOW()\",
+        \"visibility\": \"hidden\"
+      }
+    ],
+    \"metadata\": {
+      \"swap_level\": 2,
+      \"offline-label\": {
+        \"format\": \"%s(%s)\",
+        \"fields\": [
+          \"com1_feed_sector\",
+          \"com1_feed_pond\"
+        ]
+      }
+    },
+    \"links\": [
+      {
+        \"rel\": \"self\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/25\",
+        \"type\": \"application/json;type=entry\"
+      },
+      {
+        \"rel\": \"form-data\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/25/form-data\",
+        \"type\": \"application/json;type=fedd\"
+      }
+    ],
+    \"linked\": {
+      \"child\": [
+        {
+          \"id\": \"1\",
+          \"label\": \" Sector 1\",
+          \"child\": [
+            {
+              \"id\": \"3\",
+              \"label\": \" Sub Sector 1\",
+              \"child\": [
+                {
+                  \"id\": \"6\",
+                  \"label\": \"Pond 1\"
+                },
+                {
+                  \"id\": \"7\",
+                  \"label\": \"Pond 2\"
+                },
+                {
+                  \"id\": \"8\",
+                  \"label\": \"Pond 3\"
+                }
+              ]
+            },
+            {
+              \"id\": \"4\",
+              \"label\": \"Sub sector 2\",
+              \"child\": [
+                {
+                  \"id\": \"9\",
+                  \"label\": \"Pond 4\"
+                },
+                {
+                  \"id\": \"10\",
+                  \"label\": \"Pond 5\"
+                },
+                {
+                  \"id\": \"11\",
+                  \"label\": \"Pond 6\"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          \"id\": \"2\",
+          \"label\": \"Sector 2\",
+          \"child\": [
+            {
+              \"id\": \"5\",
+              \"label\": \"Sub sector 3\",
+              \"child\": [
+                {
+                  \"id\": \"12\",
+                  \"label\": \"Pond 7\"
+                },
+                {
+                  \"id\": \"13\",
+                  \"label\": \"Pond 8 \"
+                },
+                {
+                  \"id\": \"14\",
+                  \"label\": \"Pond 9\"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    \"id\": \"27\",
+    \"title\": \"Environment\",
+    \"categories\": [
+      {
+        \"http://www.aquamob.com/types\": \"form\"
+      }
+    ],
+    \"fields\": [
+      {
+        \"name\": \"com1_outside_temperature\",
+        \"label\": \"Outside Temperature (°C)\",
+        \"type\": \"slider\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 20,
+            \"max\": 40,
+            \"default\": 26
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the outside temperature\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_last_rain\",
+        \"label\": \"Has it rain since last capture\",
+        \"type\": \"boolean\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"true\": \"Yes\",
+            \"false\": \"No\",
+            \"default\": false
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the last rain\",
+          \"required\": false
+        }
+      },
+      {
+        \"name\": \"com1_flooding\",
+        \"label\": \"Flooding\",
+        \"type\": \"boolean\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"true\": \"Yes\",
+            \"false\": \"No\",
+            \"default\": false
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Flooding\",
+          \"required\": false
+        }
+      },
+      {
+        \"name\": \"com1_notes\",
+        \"label\": \"Notes\",
+        \"type\": \"text\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"captureTime\",
+        \"label\": \"Capture Time\",
+        \"type\": \"date\",
+        \"default\": \"NOW()\",
+        \"visibility\": \"hidden\"
+      }
+    ],
+    \"metadata\": {
+      \"offline-label\": {
+        \"format\": \"%s\",
+        \"fields\": [
+          \"com1_outside_temperature\"
+        ]
+      },
+      \"demo-data\": {
+        \"active\": true,
+        \"data\": [
+          [
+            {
+              \"value\": \"32\",
+              \"name\": \"com1_outside_temperature\"
+            },
+            {
+              \"value\": \"true\",
+              \"name\": \"com1_last_rain\"
+            },
+            {
+              \"value\": \"false\",
+              \"name\": \"com1_flooding\"
+            }
+          ]
+        ]
+      }
+    },
+    \"links\": [
+      {
+        \"rel\": \"self\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/27\",
+        \"type\": \"application/json;type=entry\"
+      },
+      {
+        \"rel\": \"form-data\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/27/form-data\",
+        \"type\": \"application/json;type=fedd\"
+      }
+    ]
+  },
+  {
+    \"id\": \"29\",
+    \"title\": \"Water Quality\",
+    \"categories\": [
+      {
+        \"http://www.aquamob.com/types\": \"form\"
+      }
+    ],
+    \"fields\": [
+      {
+        \"name\": \"com1_water_sector\",
+        \"label\": \"Sector\",
+        \"type\": \"choice\",
+        \"remember\": true,
+        \"source\": {
+          \"conditional\": false,
+          \"realm\": \"linked\",
+          \"conditions\": {
+            \"type\": \"sector\"
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Sector\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_water_pond\",
+        \"label\": \"Pond\",
+        \"type\": \"slider\",
+        \"remember\": true,
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 1,
+            \"max\": 20,
+            \"default\": 1
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the pond\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_water_temperature\",
+        \"label\": \"Water Temperature (°C)\",
+        \"type\": \"slider\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 10,
+            \"max\": 40,
+            \"default\": 26
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the water temperature\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_ph\",
+        \"label\": \"PH\",
+        \"type\": \"slider\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 1,
+            \"max\": 14,
+            \"default\": 7
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the PH\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_ammonia\",
+        \"label\": \"Ammonia (PPM)\",
+        \"type\": \"number\",
+        \"hint\": \"0.00\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"com1_do\",
+        \"label\": \"DO (PPM)\",
+        \"type\": \"number\",
+        \"hint\": \"0.00\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"com1_transparency\",
+        \"label\": \"Transparency\",
+        \"type\": \"choice\",
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": [
+            {
+              \"label\": \"Bad - 30 cm +\",
+              \"id\": \"bad_30\"
+            },
+            {
+              \"label\": \"Medium - 10 to 20 cm\",
+              \"id\": \"medium_20\"
+            },
+            {
+              \"label\": \"Good - 0 to 10 cm\",
+              \"id\": \"good_0\",
+              \"default\": true
+            }
+          ]
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Transparency\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_water_released\",
+        \"label\": \"Water Released\",
+        \"type\": \"boolean\",
+        \"remember\": true,
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"true\": \"Yes\",
+            \"false\": \"No\",
+            \"default\": false
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Feed type\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_notes\",
+        \"label\": \"Notes\",
+        \"type\": \"text\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"captureTime\",
+        \"label\": \"Capture Time\",
+        \"type\": \"date\",
+        \"default\": \"NOW()\",
+        \"visibility\": \"hidden\"
+      }
+    ],
+    \"metadata\": {
+      \"offline-label\": {
+        \"format\": \"%s(%s)\",
+        \"fields\": [
+          \"com1_water_sector\",
+          \"com1_water_pond\"
+        ]
+      },
+      \"demo-data\": {
+        \"active\": true,
+        \"data\": [
+          [
+            {
+              \"value\": \"1\",
+              \"name\": \"com1_water_sector\"
+            },
+            {
+              \"value\": \"2\",
+              \"name\": \"com1_water_pond\"
+            },
+            {
+              \"value\": \"24\",
+              \"name\": \"com1_water_temperature\"
+            },
+            {
+              \"value\": \"6\",
+              \"name\": \"com1_ph\"
+            },
+            {
+              \"value\": \"6.11\",
+              \"name\": \"com1_ammonia\"
+            },
+            {
+              \"value\": \"5.32\",
+              \"name\": \"com1_do\"
+            },
+            {
+              \"value\": \"Medium - 10 to 20 cm\",
+              \"name\": \"com1_transparency\"
+            },
+            {
+              \"value\": \"false\",
+              \"name\": \"com1_water_released\"
+            }
+          ]
+        ]
+      }
+    },
+    \"links\": [
+      {
+        \"rel\": \"self\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/29\",
+        \"type\": \"application/json;type=entry\"
+      },
+      {
+        \"rel\": \"form-data\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/29/form-data\",
+        \"type\": \"application/json;type=fedd\"
+      }
+    ],
+    \"linked\": [
+      {
+        \"label\": \"Sector B\",
+        \"id\": \"572\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"573\",
+        \"type\": \"subsector\",
+        \"up\": \"572\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"574\",
+        \"type\": \"pond\",
+        \"up\": \"573\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"575\",
+        \"type\": \"pond\",
+        \"up\": \"573\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"576\",
+        \"type\": \"subsector\",
+        \"up\": \"572\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"577\",
+        \"type\": \"pond\",
+        \"up\": \"576\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"578\",
+        \"type\": \"pond\",
+        \"up\": \"576\"
+      },
+      {
+        \"label\": \"Sector C\",
+        \"id\": \"579\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"580\",
+        \"type\": \"subsector\",
+        \"up\": \"579\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"581\",
+        \"type\": \"pond\",
+        \"up\": \"580\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"582\",
+        \"type\": \"pond\",
+        \"up\": \"580\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"583\",
+        \"type\": \"subsector\",
+        \"up\": \"579\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"584\",
+        \"type\": \"pond\",
+        \"up\": \"583\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"585\",
+        \"type\": \"pond\",
+        \"up\": \"583\"
+      },
+      {
+        \"label\": \"Sector A\",
+        \"id\": \"565\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"566\",
+        \"type\": \"subsector\",
+        \"up\": \"565\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"567\",
+        \"type\": \"pond\",
+        \"up\": \"566\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"568\",
+        \"type\": \"pond\",
+        \"up\": \"566\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"569\",
+        \"type\": \"subsector\",
+        \"up\": \"565\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"570\",
+        \"type\": \"pond\",
+        \"up\": \"569\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"571\",
+        \"type\": \"pond\",
+        \"up\": \"569\"
+      },
+      {
+        \"label\": \"Farm 1\",
+        \"id\": \"564\",
+        \"type\": \"farm\"
+      }
+    ]
+  },
+  {
+    \"id\": \"31\",
+    \"title\": \"Sample\",
+    \"categories\": [
+      {
+        \"http://www.aquamob.com/types\": \"form\"
+      }
+    ],
+    \"fields\": [
+      {
+        \"name\": \"com1_sample_sector\",
+        \"label\": \"Sector\",
+        \"type\": \"choice\",
+        \"remember\": true,
+        \"source\": {
+          \"conditional\": false,
+          \"realm\": \"linked\",
+          \"conditions\": {
+            \"type\": \"sector\"
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the Sector\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_sample_pond\",
+        \"label\": \"Pond\",
+        \"type\": \"slider\",
+        \"remember\": true,
+        \"source\": {
+          \"realm\": \"inline\",
+          \"options\": {
+            \"min\": 1,
+            \"max\": 20,
+            \"default\": 1
+          }
+        },
+        \"validation\": {
+          \"description\": \"Please enter the pond\",
+          \"required\": true
+        }
+      },
+      {
+        \"name\": \"com1_quantity_sampled\",
+        \"label\": \"Quantity Sampled\",
+        \"type\": \"number\",
+        \"hint\": \"0\",
+        \"default\": \"0\"
+      },
+      {
+        \"name\": \"com1_weight_sampled\",
+        \"label\": \"Weight Sampled\",
+        \"type\": \"number\",
+        \"hint\": \"0.00\",
+        \"default\": \"0.00\"
+      },
+      {
+        \"name\": \"com1_notes\",
+        \"label\": \"Notes\",
+        \"type\": \"text\",
+        \"default\": \"\"
+      },
+      {
+        \"name\": \"captureTime\",
+        \"label\": \"Capture Time\",
+        \"type\": \"date\",
+        \"default\": \"NOW()\",
+        \"visibility\": \"hidden\"
+      }
+    ],
+    \"metadata\": {
+      \"offline-label\": {
+        \"format\": \"%s(%s)\",
+        \"fields\": [
+          \"com1_sample_sector\",
+          \"com1_sample_pond\"
+        ]
+      },
+      \"demo-data\": {
+        \"active\": true,
+        \"data\": [
+          [
+            {
+              \"value\": \"1\",
+              \"name\": \"com1_sample_sector\"
+            },
+            {
+              \"value\": \"1\",
+              \"name\": \"com1_sample_pond\"
+            },
+            {
+              \"value\": \"120\",
+              \"name\": \"com1_quantity_sampled\"
+            },
+            {
+              \"value\": \"100.23\",
+              \"name\": \"com1_weight_sampled\"
+            }
+          ]
+        ]
+      }
+    },
+    \"links\": [
+      {
+        \"rel\": \"self\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/31\",
+        \"type\": \"application/json;type=entry\"
+      },
+      {
+        \"rel\": \"form-data\",
+        \"href\": \"http://128.199.161.102/aquamob-prod/web/app.php/api/form/31/form-data\",
+        \"type\": \"application/json;type=fedd\"
+      }
+    ],
+    \"linked\": [
+      {
+        \"label\": \"Sector B\",
+        \"id\": \"572\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"573\",
+        \"type\": \"subsector\",
+        \"up\": \"572\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"574\",
+        \"type\": \"pond\",
+        \"up\": \"573\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"575\",
+        \"type\": \"pond\",
+        \"up\": \"573\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"576\",
+        \"type\": \"subsector\",
+        \"up\": \"572\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"577\",
+        \"type\": \"pond\",
+        \"up\": \"576\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"578\",
+        \"type\": \"pond\",
+        \"up\": \"576\"
+      },
+      {
+        \"label\": \"Sector C\",
+        \"id\": \"579\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"580\",
+        \"type\": \"subsector\",
+        \"up\": \"579\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"581\",
+        \"type\": \"pond\",
+        \"up\": \"580\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"582\",
+        \"type\": \"pond\",
+        \"up\": \"580\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"583\",
+        \"type\": \"subsector\",
+        \"up\": \"579\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"584\",
+        \"type\": \"pond\",
+        \"up\": \"583\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"585\",
+        \"type\": \"pond\",
+        \"up\": \"583\"
+      },
+      {
+        \"label\": \"Sector A\",
+        \"id\": \"565\",
+        \"type\": \"sector\",
+        \"up\": \"564\"
+      },
+      {
+        \"label\": \"1\",
+        \"id\": \"566\",
+        \"type\": \"subsector\",
+        \"up\": \"565\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"567\",
+        \"type\": \"pond\",
+        \"up\": \"566\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"568\",
+        \"type\": \"pond\",
+        \"up\": \"566\"
+      },
+      {
+        \"label\": \"2\",
+        \"id\": \"569\",
+        \"type\": \"subsector\",
+        \"up\": \"565\"
+      },
+      {
+        \"label\": \"P1\",
+        \"id\": \"570\",
+        \"type\": \"pond\",
+        \"up\": \"569\"
+      },
+      {
+        \"label\": \"P2\",
+        \"id\": \"571\",
+        \"type\": \"pond\",
+        \"up\": \"569\"
+      },
+      {
+        \"label\": \"Farm 1\",
+        \"id\": \"564\",
+        \"type\": \"farm\"
+      }
+    ]
+  }
+]
+    </string>
 </resources>
