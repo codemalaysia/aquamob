@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final ProgressDialog dialog=Util.getProgressDialog(this,"Checking login. Please wait...");
         dialog.show();
-        LoginRequest mLoginRequest = new LoginRequest(new LoginResponse() {
+        LoginRequest mLoginRequest = new LoginRequest(mContext,new LoginResponse() {
             @Override
             public void successResponse(int statusCode, User user) {
                 dialog.dismiss();

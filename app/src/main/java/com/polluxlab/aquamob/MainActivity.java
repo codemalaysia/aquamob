@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.polluxlab.aquamob.callbacks.FormsUpdateCallback;
 import com.polluxlab.aquamob.callbacks.LoginResponse;
@@ -33,6 +34,7 @@ import com.polluxlab.aquamob.helpers.HTTPHelper;
 import com.polluxlab.aquamob.helpers.LoginRequest;
 import com.polluxlab.aquamob.helpers.PrefHelper;
 import com.polluxlab.aquamob.models.Form;
+import com.polluxlab.aquamob.models.SaveData;
 import com.polluxlab.aquamob.models.User;
 import com.polluxlab.aquamob.utils.Util;
 import com.polluxlab.aquamob.utils.Version;
@@ -43,9 +45,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -65,19 +69,20 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.main_layout);
         initialize();
 
-        mCurrentUser= prefHelper.getCurrentUser();
-        formList=dbHelper.getAllForms(mCurrentUser.getUserName());
+        mCurrentUser = prefHelper.getCurrentUser();
+        formList = dbHelper.getAllForms(mCurrentUser.getUserName());
 
-        if(formList.size()==0 && mCurrentUser.getFormsUrl()!=null){
-            getAllFormsFromServer(mCurrentUser.getFormsUrl(),mCurrentUser.getUserName(),"",null);
-        }else if(formList.size()==0 && mCurrentUser.getFormsUrl()==null) showUserNameInputDialog();
+        if (formList.size() == 0 && mCurrentUser.getFormsUrl() != null) {
+            getAllFormsFromServer(mCurrentUser.getFormsUrl(), null);
+        } else if (formList.size() == 0 && mCurrentUser.getFormsUrl() == null)
+            showUserNameInputDialog();
         else showAllForms(formList);
 
         populateUserChangeDropDown();
     }
 
     private void initialize() {
-        mContext=this;
+        mContext = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -90,13 +95,13 @@ public class MainActivity extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        formsGridList= (GridView) findViewById(R.id.mainFormsGL);
-        userChangeSpinner= (Spinner) navigationView.getHeaderView(0).findViewById(R.id.mainUserChangeSpinner);
-        dbHelper=new DBHelper(mContext);
-        prefHelper=new PrefHelper(mContext);
-        httpClient=HTTPHelper.getHTTPClient();
+        formsGridList = (GridView) findViewById(R.id.mainFormsGL);
+        userChangeSpinner = (Spinner) navigationView.getHeaderView(0).findViewById(R.id.mainUserChangeSpinner);
+        dbHelper = new DBHelper(mContext);
+        prefHelper = new PrefHelper(mContext);
+        httpClient = HTTPHelper.getHTTPClient(prefHelper.getCurrentUser().getUserName(),"",prefHelper.getPlxClientId());
 
-        ImageButton userAddBtn= (ImageButton) navigationView.getHeaderView(0).findViewById(R.id.mainUserAddIB);
+        ImageButton userAddBtn = (ImageButton) navigationView.getHeaderView(0).findViewById(R.id.mainUserAddIB);
         userAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,9 +129,13 @@ public class MainActivity extends AppCompatActivity
         formsGridList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent intent = new Intent(mContext, FormDataListActivity.class);
+                intent.putExtra("form", formList.get(position));
+                startActivity(intent);
             }
         });
+
+        Util.printDebug("plx client id",prefHelper.getPlxClientId());
     }
 
     @Override
@@ -135,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            showExitConfirmDialog();
         }
     }
 
@@ -147,26 +156,92 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_refresh:
+        switch (item.getItemId()) {
+            case R.id.menu_senddata:
+                startSendingDataToServer();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void startSendingDataToServer() {
+        if(Util.isConnectedToInternet(this)){
+            ArrayList formIdList = new ArrayList(prefHelper.getFormIds());
+            if(formIdList.size()>0){
+                String formId=formIdList.get(0).toString();
+                formIdList.remove(0);
+                Util.printDebug("Form Id",formId);
+                ArrayList<SaveData> savedForm=dbHelper.getAllSavedForms(formId,mCurrentUser.getUserName());
+                if(savedForm.size()>0) {
+                    Util.printDebug("Saved form size",savedForm.size()+"");
+                    try {
+                        JSONArray savedFormsArray = new JSONArray();
+                        for (int i = 0; i < savedForm.size(); i++) {
+                            savedFormsArray.put(new JSONArray(savedForm.get(i).getFormData()));
+                        }
+                        JSONObject serverJsonObject = new JSONObject();
+                        serverJsonObject.put("formdata", savedFormsArray);
+                        Util.printDebug("saved form array", serverJsonObject.toString());
+                        sendDataToServer(formId, serverJsonObject,formIdList);
+                    }catch (Exception e){
+                        Util.printDebug("Error in startSendingData",e.getMessage());
+                    }
+                }else {
+                    startSendingDataToServer();
+                }
+            }
+        }else Util.showNoInternetDialog(this);
+    }
+
+    private void sendDataToServer(final String formId, JSONObject serverJsonObject, final ArrayList formIdList) throws UnsupportedEncodingException {
+        httpClient=HTTPHelper.getHTTPClient(mCurrentUser.getUserName(),"",prefHelper.getPlxClientId());
+        final StringEntity entity = new StringEntity(serverJsonObject.toString());
+        String sendDataUrl=String.format(ServerLinks.SEND_DATA_URL,formId);
+        Util.printDebug("send data url",sendDataUrl);
+        Util.printDebug("send data", serverJsonObject.toString());
+        httpClient.post(mContext, sendDataUrl, entity, "application/json", new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Util.printDebug("Server sent data response success", statusCode + "");
+                if (formIdList.size() == 0) {
+                    dbHelper.deleteAllSavedFormData(mCurrentUser.getUserName());
+                } else {
+                    dbHelper.deleteSavedFormDataByFormId(formId, mCurrentUser.getUserName());
+                    startSendingDataToServer();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Util.printDebug("Server sent data response fail", statusCode + "");
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+            }
+        });
+    }
+
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.nav_about:
                 showVersionInfoDialog();
                 break;
             case R.id.nav_update:
-                getAllFormsFromServer(mCurrentUser.getFormsUrl(), mCurrentUser.getUserName(), "", new FormsUpdateCallback() {
+                getAllFormsFromServer(mCurrentUser.getFormsUrl(), new FormsUpdateCallback() {
                     @Override
                     public void updated() {
-                        Util.showToast(mContext,"Forms are updated successfully");
-                        //checkForUpdate();
+                        Util.showToast(mContext, "Forms are updated successfully");
+                        checkForUpdate();
                     }
                 });
                 break;
@@ -177,37 +252,38 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void checkForUpdate(){
-        Intent appUpdateIntent=new Intent(this,VersionCheckActivity.class);
-        appUpdateIntent.putExtra("update",true);
+    private void checkForUpdate() {
+        Intent appUpdateIntent = new Intent(this, VersionCheckActivity.class);
+        appUpdateIntent.putExtra("update", true);
         appUpdateIntent.putExtra("type", ReleaseDetails.type.toString());
-        startActivity(appUpdateIntent); //TODO Need to create new update system
+        startActivity(appUpdateIntent);
         finish();
     }
 
     private void showVersionInfoDialog() {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(this);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setTitle("Current app version");
-        dialogBuilder.setMessage(Version.MAJOR+"."+Version.MINOR+"."+Version.BUILD_VERSION);
+        dialogBuilder.setMessage(Version.MAJOR + "." + Version.MINOR + "." + Version.BUILD_VERSION);
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
-        Dialog dialog=dialogBuilder.create();
+        Dialog dialog = dialogBuilder.create();
         dialog.show();
     }
 
     private void showAllForms(ArrayList<Form> formArrayList) {
-        if(formArrayList!=null) formsGridList.setAdapter(new ArrayAdapter<>(mContext, R.layout.single_form_item_layout, formArrayList));
+        if (formArrayList != null)
+            formsGridList.setAdapter(new ArrayAdapter<>(mContext, R.layout.single_form_item_layout, formArrayList));
     }
 
     private void populateUserChangeDropDown() {
-        final ArrayList<User> userList=prefHelper.getUsersInfo();
+        final ArrayList<User> userList = prefHelper.getUsersInfo();
         userChangeSpinner.setAdapter(new ArrayAdapter<>(mContext, R.layout.user_spinner_item, userList));
-        for (int i=0;i<userList.size();i++){
-            if(userList.get(i).getUserName().equals(mCurrentUser.getUserName())) {
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getUserName().equals(mCurrentUser.getUserName())) {
                 userChangeSpinner.setSelection(i);
                 break;
             }
@@ -215,8 +291,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showUserNameInputDialog() {
-        View view=getLayoutInflater().inflate(R.layout.user_change_dialog_layout,null);
-        final EditText usernameEt= (EditText) view.findViewById(R.id.userEt);
+        View view = getLayoutInflater().inflate(R.layout.user_change_dialog_layout, null);
+        final EditText usernameEt = (EditText) view.findViewById(R.id.userEt);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 mContext);
         alertDialogBuilder.setTitle(getString(R.string.enter_username));
@@ -231,10 +307,15 @@ public class MainActivity extends AppCompatActivity
                         }
                         final String username = usernameEt.getText().toString().trim();
                         if (TextUtils.isEmpty(username.trim())) {
-                            Util.showToast(mContext,"Please enter your username");
+                            Util.showToast(mContext, "Please enter your username");
                             return;
                         }
-                        validateLoginAndPullForms(username,null);
+                        validateLoginAndPullForms(username, new FormsUpdateCallback() {
+                            @Override
+                            public void updated() {
+                                populateUserChangeDropDown();
+                            }
+                        });
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -250,7 +331,7 @@ public class MainActivity extends AppCompatActivity
     private void validateLoginAndPullForms(final String username, final FormsUpdateCallback formsUpdateCallback) {
         final ProgressDialog pDialog = Util.getProgressDialog(mContext, "Checking login. Please wait...");
         pDialog.show();
-        LoginRequest mLoginRequest = new LoginRequest(new LoginResponse() {
+        LoginRequest mLoginRequest = new LoginRequest(mContext,new LoginResponse() {
             @Override
             public void successResponse(int statusCode, User user) {
                 pDialog.dismiss();
@@ -262,9 +343,9 @@ public class MainActivity extends AppCompatActivity
                 user.setUserName(username);
                 prefHelper.saveUserInfo(user);
                 prefHelper.saveCurrentUser(user);
-                mCurrentUser=user;
+                mCurrentUser = user;
                 Util.printDebug("Forms url", user.getFormsUrl());
-                getAllFormsFromServer(user.getFormsUrl(), username, "",formsUpdateCallback);
+                getAllFormsFromServer(user.getFormsUrl(), formsUpdateCallback);
             }
 
             @Override
@@ -278,10 +359,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void getAllFormsFromServer(final String FORM_URL,final String username, final String password, final FormsUpdateCallback formsUpdateCallback) {
+    private void getAllFormsFromServer(final String FORM_URL, final FormsUpdateCallback formsUpdateCallback) {
         Util.printDebug("Form url", FORM_URL);
-        final ProgressDialog progressDialog=Util.getProgressDialog(mContext,"Getting forms from server...");
-        httpClient= HTTPHelper.getHTTPClient(username, password);
+        Util.printDebug("installation id", prefHelper.getPlxClientId());
+        final ProgressDialog progressDialog = Util.getProgressDialog(mContext, "Getting forms from server...");
+        httpClient = HTTPHelper.getHTTPClient(mCurrentUser.getUserName(), "",prefHelper.getPlxClientId());
         httpClient.get(FORM_URL, null, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -299,13 +381,26 @@ public class MainActivity extends AppCompatActivity
                 try {
                     dbHelper.deleteAllDownloadedForms(mCurrentUser.getUserName());
 
-                    for (int i = 0; i < response.length(); i++) {
+                   for (int i = 0; i < response.length(); i++) {
                         JSONObject formObject = response.getJSONObject(i);
                         Util.printDebug("Response-", statusCode + " " + response.getJSONObject(i).getJSONArray("fields").toString());
                         dbHelper.saveDownloadedForm(formObject.getString("id"), mCurrentUser.getUserName(),
                                 formObject.getString("title"),
                                 formObject.toString());
-                    }
+                       prefHelper.saveFormId(formObject.getString("id"));
+                   }
+                    formList = dbHelper.getAllForms(mCurrentUser.getUserName());
+
+                    //TODO Remove this to save original json data
+/*                    JSONArray formArray = new JSONArray(getResources().getString(R.string.forms_json));
+                    for (int i = 0; i < formArray.length(); i++) {
+                        JSONObject formObject = formArray.getJSONObject(i);
+                        Util.printDebug("Response-", statusCode + " " + response.getJSONObject(i).getJSONArray("fields").toString());
+                        dbHelper.saveDownloadedForm(formObject.getString("id"), mCurrentUser.getUserName(),
+                                formObject.getString("title"),
+                                formObject.toString());
+                    }*/
+
                     formList = dbHelper.getAllForms(mCurrentUser.getUserName());
                     Util.printDebug("Form size", formList.size() + "");
                     showAllForms(formList);
@@ -329,6 +424,26 @@ public class MainActivity extends AppCompatActivity
                 progressDialog.dismiss();
             }
         });
+    }
+
+
+    private void showExitConfirmDialog() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        finish();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        dialog.cancel();
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure want to exit?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
 }
