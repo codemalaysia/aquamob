@@ -12,6 +12,11 @@ public class FormData {
     private String type;
     private String exportValue;
 
+    public FormData(JSONObject fieldJsonObject, String type) {
+        this.fieldJsonObject = fieldJsonObject;
+        this.type = type;
+    }
+
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -30,14 +35,6 @@ public class FormData {
 
     public JSONObject getFieldJsonObject() {
         return fieldJsonObject;
-    }
-
-    public void setFieldJsonObject(JSONObject fieldJsonObject) {
-        this.fieldJsonObject = fieldJsonObject;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getType() {

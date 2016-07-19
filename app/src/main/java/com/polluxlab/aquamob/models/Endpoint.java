@@ -1,5 +1,7 @@
 package com.polluxlab.aquamob.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -11,29 +13,49 @@ public class Endpoint {
     private String version;
     private Resources resources;
 
-    public String getProfileUrl(){
+    public String getProfileUrl() {
         return resources.getProfile().getProfileUrl();
     }
 
-    class Resources{
+    public String getInstallationId(){
+        return resources.getInstallationId().getInstallationIdUrl();
+    }
+
+    class Resources {
         private Profile profile;
         private User user;
 
-        public Profile getProfile(){
+        @SerializedName("installation-id")
+        private InstallationId installationId;
+
+        public Profile getProfile() {
             return profile;
+        }
+
+        public InstallationId getInstallationId() {
+            return installationId;
         }
     }
 
-    class User{
+    class User {
         private String title;
         private List<Links> links;
     }
 
-    class Profile{
+    class Profile {
         private String title;
         private List<Links> links;
 
-        public String getProfileUrl(){
+        public String getProfileUrl() {
+            return links.get(0).getHref();
+        }
+    }
+
+    class InstallationId {
+        private String title;
+        private List<Links> links;
+
+        public String getInstallationIdUrl(){
             return links.get(0).getHref();
         }
     }

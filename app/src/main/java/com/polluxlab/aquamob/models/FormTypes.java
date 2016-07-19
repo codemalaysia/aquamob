@@ -6,6 +6,7 @@ package com.polluxlab.aquamob.models;
 public class FormTypes {
     public static final String TEXT="text";
     public static final String NUMBER="number";
+    public static final String DECIMAL="decimal";
     public static final String DATE="date";
     public static final String TIME="time";
     public static final String DATETIME="datetime";
@@ -13,4 +14,5 @@ public class FormTypes {
     public static final String CHOICE="choice";
     public static final String MULTICHOICE="multichoice";
     public static final String SLIDER="slider";
+    public static final String DROPDOWN="dropdown";
 }

@@ -1,9 +1,11 @@
 package com.polluxlab.aquamob.models;
 
+import java.io.Serializable;
+
 /**
  * Created by ARGHA K ROY on 5/26/2015.
  */
-public class Form {
+public class Form implements Serializable{
     private String id;
     private String name;
     private String formId;
