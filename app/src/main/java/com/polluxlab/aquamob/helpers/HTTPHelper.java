@@ -17,7 +17,13 @@ public class HTTPHelper {
     public static AsyncHttpClient getHTTPClient(String username,String password){
         AsyncHttpClient httpClient=getHTTPClient();
         httpClient.setBasicAuth(username, password);
-        httpClient.addHeader("plx-client-id","f1202940-e144-11e4-a23f-0002a5d5c51b");
+        return httpClient;
+    }
+
+    public static AsyncHttpClient getHTTPClient(String username,String password,String plxClientId){
+        AsyncHttpClient httpClient=getHTTPClient();
+        httpClient.setBasicAuth(username, password);
+        httpClient.addHeader("plx-client-id",plxClientId);
         return httpClient;
     }
 
