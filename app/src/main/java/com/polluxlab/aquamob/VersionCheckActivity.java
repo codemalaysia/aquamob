@@ -1,20 +1,26 @@
 package com.polluxlab.aquamob;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
@@ -45,85 +51,127 @@ import cz.msebera.android.httpclient.Header;
  */
 public class VersionCheckActivity extends Activity implements OnClickListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_CODE = 11;
     AsyncHttpClient httpClient;
     ProgressDialog progressDialog;
     ProgressBar horizonProgressBar;
-    TextView progressText,infoTextView;
-    LinearLayout checkUpdateBtnLayout,downloadProgressLayout;
-    Button checkUpdateBtn,skipUpdateBtn;
+    TextView progressText, infoTextView;
+    LinearLayout checkUpdateBtnLayout, downloadProgressLayout;
+    Button checkUpdateBtn, skipUpdateBtn;
 
-    boolean enterApp=false;
+    boolean enterApp = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.version_check_layout);
-        horizonProgressBar= (ProgressBar) findViewById(R.id.downloadProgressBar);
-        progressText= (TextView) findViewById(R.id.downloadProgressText);
-        infoTextView= (TextView) findViewById(R.id.versionCheckInfoTv);
-        checkUpdateBtnLayout= (LinearLayout) findViewById(R.id.versionCheckCheckUpdateBtnsLayout);
-        downloadProgressLayout= (LinearLayout) findViewById(R.id.versionCheckDownloadProgressLayout);
-        checkUpdateBtn= (Button) findViewById(R.id.checkUpdateBtn);
-        skipUpdateBtn= (Button) findViewById(R.id.skipUpdateBtn);
+        horizonProgressBar = (ProgressBar) findViewById(R.id.downloadProgressBar);
+        progressText = (TextView) findViewById(R.id.downloadProgressText);
+        infoTextView = (TextView) findViewById(R.id.versionCheckInfoTv);
+        checkUpdateBtnLayout = (LinearLayout) findViewById(R.id.versionCheckCheckUpdateBtnsLayout);
+        downloadProgressLayout = (LinearLayout) findViewById(R.id.versionCheckDownloadProgressLayout);
+        checkUpdateBtn = (Button) findViewById(R.id.checkUpdateBtn);
+        skipUpdateBtn = (Button) findViewById(R.id.skipUpdateBtn);
 
         skipUpdateBtn.setOnClickListener(this);
         checkUpdateBtn.setOnClickListener(this);
 
-        progressDialog= Util.getProgressDialog(this, "Loading. Please wait...");
-        httpClient= HTTPHelper.getParseHTTPClient();
+        progressDialog = Util.getProgressDialog(this, "Loading. Please wait...");
+        httpClient = HTTPHelper.getParseHTTPClient();
 
-        if(getIntent().getBooleanExtra("update",false)){
-            updateUIForManualUpdate();
-            checkWhichAppToUpdate();
-            return;
-        }
+        updateUIForManualUpdate();
 
-        if(ReleaseDetails.type== ReleaseDetails.Type.MASTER){
+        if (ReleaseDetails.type == ReleaseDetails.Type.MASTER) {
             infoTextView.setText("Checking For Updates.");
             checkUpdateBtnLayout.setVisibility(View.GONE);
-            if(Util.isConnectedToInternet(this)){
-                enterIntoApp();
-            }else enterIntoApp();
-        }else if(ReleaseDetails.type== ReleaseDetails.Type.DEVELOPER) {
+            if (Util.isConnectedToInternet(this)) {
+                checkWhichAppToUpdate();
+            } else enterIntoApp();
+        } else if (ReleaseDetails.type == ReleaseDetails.Type.DEVELOPER) {
             checkUpdateBtnLayout.setVisibility(View.VISIBLE);
             checkUpdateBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    checkForUpdate(false);
+                    checkWhichAppToUpdate();
                 }
             });
         }
+    }
 
+    private boolean checkReqPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    showMessageOKCancel("You need to allow access to update the app",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(VersionCheckActivity.this,new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},MY_PERMISSIONS_REQUEST_CODE);
+                                }
+                            });
+                    return false;
+                }
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+                return false;
+            }else return true;
+        }else return true;
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CODE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this,"Permission is Granted",Toast.LENGTH_SHORT).show();
+                    checkWhichAppToUpdate();
+                } else {
+                    Toast.makeText(this,"You have not permitted the access. The app may not be work properly.",Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 
     private void checkWhichAppToUpdate() {
-        if(Util.isConnectedToInternet(this)){
-            if(getIntent().getStringExtra("type").equalsIgnoreCase(ReleaseDetails.Type.MASTER.toString())) checkForUpdate(true);
-            else if(getIntent().getStringExtra("type").equalsIgnoreCase(ReleaseDetails.Type.DEVELOPER.toString())) checkForUpdate(false);
-        }else{
+        if (!checkReqPermissions()) return;
+        if (Util.isConnectedToInternet(this)) {
+            if (getIntent().getStringExtra("type").equalsIgnoreCase(ReleaseDetails.Type.MASTER.toString()))
+                checkForUpdate(true);
+            else if (getIntent().getStringExtra("type").equalsIgnoreCase(ReleaseDetails.Type.DEVELOPER.toString()))
+                checkForUpdate(false);
+        } else {
             Util.showNoInternetDialog(this);
         }
     }
 
     private void updateUIForManualUpdate() {
-        if(Util.isConnectedToInternet(this))infoTextView.setText("You are online");
+        if (Util.isConnectedToInternet(this)) infoTextView.setText("You are online");
         else infoTextView.setText("You are offline");
     }
 
     private void checkForUpdate(boolean master) {
-        JSONObject object=new JSONObject();
-        RequestParams params=new RequestParams();
+        JSONObject object = new JSONObject();
+        RequestParams params = new RequestParams();
         try {
-            if(master)
-                object.put("type","master");
+            if (master)
+                object.put("type", "master");
             else
-                object.put("type","dev");
+                object.put("type", "dev");
 
-            params.add("where",object.toString());
-            params.add("order","-buildNumber");
+            params.add("where", object.toString());
+            params.add("order", "-buildNumber");
         } catch (JSONException e) {
             e.printStackTrace();
-            Util.printDebug("Json Exception",e.getMessage());
+            Util.printDebug("Json Exception", e.getMessage());
         }
         httpClient.get("https://api.parse.com/1/classes/AquamobApps", params, new JsonHttpResponseHandler() {
             @Override
@@ -172,7 +220,7 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
                         Util.printDebug("Compare", versionCompare);
                         if (enterApp)
                             enterIntoApp();
-                        else{
+                        else {
                             progressDialog.dismiss();
                             showAppUpdateConfirmDialog(fileUrl);
                         }
@@ -192,11 +240,11 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
         });
     }
 
-    private void showAppUpdateConfirmDialog(final String fileUrl){
-        Util.printDebug("Inside confirm",fileUrl);
-        DBHelper dbHelper=new DBHelper(this);
-        if(dbHelper.hasSavedFormsData()){
-            AlertDialog.Builder builder=new AlertDialog.Builder(this);
+    private void showAppUpdateConfirmDialog(final String fileUrl) {
+        Util.printDebug("Inside confirm", fileUrl);
+        DBHelper dbHelper = new DBHelper(this);
+        if (dbHelper.hasSavedFormsData()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("New Update Found");
             builder.setMessage("You have saved data that is not yet sync, \n" +
                     "updating will cause you to lose this saved data. \n" +
@@ -206,7 +254,7 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    startActivity(new Intent(VersionCheckActivity.this,LoginActivity.class));
+                    startActivity(new Intent(VersionCheckActivity.this, LoginActivity.class));
                     finish();
                 }
             }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -215,9 +263,9 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
                     downloadParseApp(fileUrl);
                 }
             });
-            Dialog dialog=builder.create();
+            Dialog dialog = builder.create();
             dialog.show();
-        }else{
+        } else {
             downloadParseApp(fileUrl);
         }
     }
@@ -232,12 +280,12 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
 
     private void enterIntoApp() {
         Util.printDebug("Entering app", "");
-        startActivity(new Intent(VersionCheckActivity.this,LoginActivity.class));
+        startActivity(new Intent(VersionCheckActivity.this, LoginActivity.class));
         finish();
     }
 
 
-    private void downloadParseApp(String fileUrl){
+    private void downloadParseApp(String fileUrl) {
         infoTextView.setText("Latest Version Found.");
         downloadProgressLayout.setVisibility(View.VISIBLE);
         checkUpdateBtnLayout.setVisibility(View.GONE);
@@ -245,13 +293,13 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
         httpClient.get(fileUrl, new FileAsyncHttpResponseHandler(VersionCheckActivity.this) {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                Util.printDebug("Download error",statusCode+"");
+                Util.printDebug("Download error", statusCode + "");
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, File file) {
-                Util.printDebug("Downloaded file",file.getAbsolutePath()+" "+file.getName());
-                if(file!=null){
+                Util.printDebug("Downloaded file", file.getAbsolutePath() + " " + file.getName());
+                if (file != null) {
                     copyToFileManager(file);
                 }
             }
@@ -259,10 +307,10 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);
-                int progress= (int) (((bytesWritten*1.0)/totalSize)*100);
+                int progress = (int) (((bytesWritten * 1.0) / totalSize) * 100);
                 horizonProgressBar.setProgress(progress);
-                progressText.setText("Download Progress: "+progress+"%");
-                if(progress==100)
+                progressText.setText("Download Progress: " + progress + "%");
+                if (progress == 100)
                     progressText.setText("Download Complete");
                 //Util.printDebug("Progress ",((bytesWritten*1.0)/totalSize)*100+"%");
             }
@@ -294,16 +342,16 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
             file.delete();
 
             finish();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             infoTextView.setText(e.getMessage());
-            Util.showToast(this,"Copy file error "+e.getMessage());
+            Util.showToast(this, "Copy file error " + e.getMessage());
         }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.skipUpdateBtn:
                 enterIntoApp();
                 break;
@@ -316,6 +364,11 @@ public class VersionCheckActivity extends Activity implements OnClickListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         httpClient.cancelAllRequests(true);
     }
 }
