@@ -19,6 +19,9 @@ import java.util.Set;
 public class PrefHelper {
     SharedPreferences preferences;
     Gson gson;
+
+    private static final String PLX_CLIENT_ID_PREF="plx_client_id_pref";
+
     public PrefHelper(Context context){
         gson=new Gson();
         preferences=context.getSharedPreferences(AppConst.APP_PREF, Context.MODE_PRIVATE);
@@ -35,6 +38,14 @@ public class PrefHelper {
         Gson gson=new Gson();
         String userJson=gson.toJson(user);
         editor.putString(AppConst.PREF_USERNAME,userJson);
+        editor.apply();
+    }
+
+    public void saveFormId(String formId){
+        Set<String> formIdSet=preferences.getStringSet(AppConst.PREF_FORM_IDS,new HashSet<String>());
+        formIdSet.add(formId);
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putStringSet(AppConst.PREF_FORM_IDS, formIdSet);
         editor.apply();
     }
 
@@ -69,5 +80,15 @@ public class PrefHelper {
         editor.clear();
         editor.apply();
         return true;
+    }
+
+    public void savePLXId(String plxClientId){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putString(PLX_CLIENT_ID_PREF,plxClientId);
+        editor.apply();
+    }
+
+    public String getPlxClientId(){
+        return preferences.getString(PLX_CLIENT_ID_PREF,null);
     }
 }
