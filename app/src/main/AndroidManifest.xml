@@ -12,9 +12,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".MyApplication"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -29,6 +31,20 @@
             android:name=".VersionCheckActivity"
             android:label="Updates"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".FormFieldsPagerActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".FormDataListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".NewFormDataActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7e9922780de0a36675b241abe1b0b3f74afb7974" />
     </application>
 
 </manifest>
